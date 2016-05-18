@@ -1,0 +1,139 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Spacebrew String</title>
+
+		<meta charset="utf-8">
+		<link rel="stylesheet" href="css/reset.css" type="text/css" media="screen" charset="utf-8" />
+		<link rel="stylesheet" href="css/style.css" type="text/css" media="screen" charset="utf-8" />
+		<script type="text/javascript" src="js/jq.js"></script>
+		<script type="text/javascript" src="js/sb-1.4.1.js"></script>
+
+		<script type="text/javascript" src="http://cdn.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
+		<script type="text/javascript" src="http://cdn.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
+
+		<script type="text/javascript" src="js/require.js"></script>
+
+		<script type="text/javascript">
+		  
+		// when window loads call the setup method
+		$(window).on("load", setup);
+
+		// Spacebrew Object
+		var sb, app_name = "Ros Cloud";
+
+		function setup (){
+			//var random_id = "0000" + Math.floor(Math.random() * 10000);
+
+			//app_name = app_name + ' ' + random_id.substring(random_id.length-4);
+
+			// setup spacebrew
+	
+			sb = new Spacebrew.Client();  // create spacebrew client object
+
+			sb.name(app_name);
+			sb.description("This app sends text from an HTML form."); // set the app description
+
+		        // create the spacebrew subscription channels
+			sb.addPublish("publisher", "string", "");	// create the publication feed
+			sb.addSubscribe("subscriber", "string");		// create the subscription feed
+
+			// configure the publication and subscription feeds
+			sb.onStringMessage = onStringMessage;		
+			sb.onOpen = onOpen;
+
+			// connect to spacbrew
+			sb.connect();  
+
+			// listen to button clicks
+			//$("#button").on("mousedown", onMouseDown);
+		}
+
+		function onOpen() {
+			var message = "Connected as <strong>" + sb.name() + "</strong>. ";
+			if (sb.name() === app_name) {
+				message += "<br>You can customize this app's name in the query string by adding <strong>name=your_app_name</strong>."
+			}
+			$("#name").html( message );
+		}
+
+			
+
+		/**
+		 * onStringMessage Function that is called whenever new spacebrew string messages are received.
+		 *          It accepts two parameters:
+		 * @param  {String} name    Holds name of the subscription feed channel
+		 * @param  {String} value 	Holds value received from the subscription feed
+		 */
+		var mensagem;
+		function onStringMessage( name, value ){
+			console.log("[onBooleanMessage] boolean message received ", value);
+			$("#msg_received").text(value); // display the sent message in the browser         
+			mensagem = value;
+			//alert(mensagem);
+			var string = new ROSLIB.Topic({
+			    ros : ros,
+			    name : '/resposta',
+			    messageType : 'std_msgs/String'
+			  });
+
+			  var msg = new ROSLIB.Message({
+			    data : JSON.stringify(mensagem)
+			  });
+
+			  string.publish(msg);
+		}
+
+	    function enviaRos(string){
+		  /*var listener = new ROSLIB.Topic({
+		    ros : ros,
+		    name : '/listener',
+		    messageType : 'std_msgs/String'
+		  });*/
+	    	//listener.subscribe(function(message) {
+		    var newString = string;
+		    console.log('Received message on ' + listener.name + ': ' + string);
+		    //enviaRos(message.data);
+		    if (newString !== "") {               // if input box is not blank
+			console.log("Sending message " + newString); 
+			sb.send("publisher", "string", newString);   // send string to spacebrew
+			$("#status").text(newString); // display the sent message in the browser         
+		    }
+		    //listener.unsubscribe();
+		  }
+
+		function WebSocketTest(){
+			var ws = new WebSocket("ws://localhost:1337/");
+				
+		       ws.onopen = function(){
+		          // Web Socket is connected, send data using send()
+		          ws.send("Message to send");
+		          alert("Message is sent...");
+		       };
+				
+		       ws.onmessage = function (evt) { 
+		          var received_msg = evt.data;
+		          alert("Message is received...");
+		       };
+		}
+	    </script>
+	</head>
+
+	<body>
+		<h2>
+			Sent Message: <span id="status"/>
+		</h2>
+		<h1>
+			<b>Received Message: </b><span id="msg_received"/>
+		</h1>
+
+		</br></br>
+		<div id="name">Trying to connect</div>
+
+		<div id="sse">
+		 <a href="javascript:WebSocketTest()">Run WebSocket</a>
+		</div>
+
+	</body>
+
+</html>

@@ -1,0 +1,21 @@
+não funcionaram
+	python-bond
+	django
+
+	http
+	socket.io
+
+nodeJS
+websocket
+ros_bridge
+
+
+Comandos
+
+roslaunch rosbridge_server rosbridge_websocket.launch
+rostopic pub /listener std_msgs/String "funciona"
+
+rosservice call /send_data "teste"
+
+
+node socket_final.js

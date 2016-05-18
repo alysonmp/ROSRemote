@@ -1,0 +1,18 @@
+{
+  "lang": "JavaScript",
+  "command": [
+    ["nodejs", "-i"],
+    ["node"]
+  ],
+  "proto": ["JSON"],
+  "init": {
+    "probe": "console.log(\"stage1\".toUpperCase());",
+    "stage1": {
+      "file": "stage1.js",
+      "sub": ["\\s*(///.*)?\\n\\s*", ""]
+    },
+    "stage2": {
+      "file": "stage2.js"
+    }
+  }
+}

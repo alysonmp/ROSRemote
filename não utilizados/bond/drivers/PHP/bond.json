@@ -1,0 +1,16 @@
+{
+  "lang": "PHP",
+  "command": [["php", "-a"]],
+  "proto": ["JSON"],
+  "init": {
+    "wait": "\\r?\\n\\r?\\n",
+    "probe": "echo strtoupper(\"stage1\\n\");",
+    "stage1": {
+      "file": "stage1.php",
+      "sub": ["\\s*(///.*)?\\n\\s*", ""]
+    },
+    "stage2": {
+      "file": "stage2.php"
+    }
+  }
+}
