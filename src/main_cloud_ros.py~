@@ -73,7 +73,7 @@ class myThread (threading.Thread):
 
 	while(True):
 		orig_settings = termios.tcgetattr(sys.stdin)
-		tty.setraw(sys.stdin)
+		#tty.setraw(sys.stdin)
 		#ch=sys.stdin.read(1)[0]
 
 		if(ch == 'A'):
