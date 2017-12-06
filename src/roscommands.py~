@@ -36,6 +36,10 @@ def set_robot(brew, commands):
 
 def roscommands(brew, commands):
 	global robot
+<<<<<<< HEAD
+	rospy.logwarn(robot)
+=======
+>>>>>>> 823dbac77d3a99714b6d980b4715c886ef89d857
 
 	vel = Twist()
 	global proc

@@ -19,9 +19,12 @@ from rosrun import rosrunFunctions
 import roscommands
 from roscommands import rosCommandsFunctions
 
+<<<<<<< HEAD
 import sensor
 from sensor import rosSensors
 
+=======
+>>>>>>> 823dbac77d3a99714b6d980b4715c886ef89d857
 import subprocess
 import threading
 
@@ -66,22 +69,11 @@ def recebido(data):
 	elif data['acao']=="enviar" and data['comandoRos']=='roscommands':
 		method = getattr(roscommands, data['funcao'])
 		result = method(brew, data['commands'])
-	elif data['acao'] == "enviar" and data['comandoRos']=="sensor":
-		method = getattr(sensor, data['funcao'])
-		result = method(brew, data['dados'])
 	else:
 		rospy.logwarn("no else")
 		rospy.logwarn(data['title']+"\n"+data['dados'])
 
 	#print("--- %s seconds ---" % (time.time() - start_time))
-
-def move(req):
-	global brew
-	
-	data['acao'] = 'enviar'
-	data['funcao'] = 'get_sensor'
-
-	rosSensors(brew)
 
 class myThread (threading.Thread):
     def __init__(self, threadID, name, counter):

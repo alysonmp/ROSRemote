@@ -120,11 +120,10 @@ def callback(resp):
 	while(stop_ == False):
 		xml = ros2xml(resp, "")
 		data = {'dados':xml, 'title':"Resultados de rostopic echo do master "+ip_, 'acao':'receber'}
+
 		brew_.publish("Publisher", data)
 		time.sleep(float(freq_))
-		rospy.logwarn("aqui = "+str(stop_))
-
-	rospy.logwarn("saiu do while")
+		#rospy.logwarn("aqui = "+str(stop_))
 
 	return
 

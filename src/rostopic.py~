@@ -74,7 +74,7 @@ def rostopicList(brew, topic, freq, ip):
 
 	global ip_
 	dados = ""
-	rospy.logwarn(ip)
+
 	if(ip == '' or ip == ip_):
 		master = rosgraph.masterapi.Master('/rostopic')
 		resp = master.getPublishedTopics('/')
@@ -120,12 +120,12 @@ def callback(resp):
 	while(stop_ == False):
 		xml = ros2xml(resp, "")
 		data = {'dados':xml, 'title':"Resultados de rostopic echo do master "+ip_, 'acao':'receber'}
+
 		brew_.publish("Publisher", data)
 		time.sleep(float(freq_))
-		rospy.logwarn("aqui = "+str(stop_))
+		#rospy.logwarn("aqui = "+str(stop_))
 
-	rospy.logwarn("saiu do while")
-
+<<<<<<< HEAD
 	return
 
 
@@ -156,6 +156,24 @@ def rostopicEcho(brew, topic, freq, ip):
 	else:
 		data = {'dados':dados, 'title':"IP = " +ip+ " e nao corresponde ao solicitado", 'acao':'receber'}
 		brew.publish("Publisher", data)
+=======
+
+def rostopicEcho(brew, topic):
+	global brew_
+	brew_ = brew
+
+	proc = subprocess.Popen(["rostopic type "+topic], stdout=subprocess.PIPE, shell=True)
+	(dados, err) = proc.communicate()
+
+	dado = dados.split("/")
+	dado[0] += ".msg"
+
+	mod = __import__(dado[0], fromlist=[dado[1]])
+
+	klass = getattr(mod, dado[1].strip())
+
+	rospy.Subscriber(topic, klass, callback)
+>>>>>>> 823dbac77d3a99714b6d980b4715c886ef89d857
 '''FIM ROSTOPIC ECHO'''
 
 

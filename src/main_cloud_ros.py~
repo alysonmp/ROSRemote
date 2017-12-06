@@ -19,9 +19,12 @@ from rosrun import rosrunFunctions
 import roscommands
 from roscommands import rosCommandsFunctions
 
+<<<<<<< HEAD
 import sensor
 from sensor import rosSensors
 
+=======
+>>>>>>> 823dbac77d3a99714b6d980b4715c886ef89d857
 import subprocess
 import threading
 
@@ -66,12 +69,17 @@ def recebido(data):
 	elif data['acao']=="enviar" and data['comandoRos']=='roscommands':
 		method = getattr(roscommands, data['funcao'])
 		result = method(brew, data['commands'])
+<<<<<<< HEAD
 	elif data['acao'] == "enviar" and data['comandoRos']=="sensor":
 		method = getattr(sensor, data['funcao'])
 		result = method(brew, data['dados'])
+=======
+>>>>>>> 823dbac77d3a99714b6d980b4715c886ef89d857
 	else:
+		rospy.logwarn("no else")
 		rospy.logwarn(data['title']+"\n"+data['dados'])
 
+<<<<<<< HEAD
 	#print("--- %s seconds ---" % (time.time() - start_time))
 
 def move(req):
@@ -82,6 +90,8 @@ def move(req):
 
 	rosSensors(brew)
 
+=======
+>>>>>>> 823dbac77d3a99714b6d980b4715c886ef89d857
 class myThread (threading.Thread):
     def __init__(self, threadID, name, counter):
         threading.Thread.__init__(self)
@@ -95,9 +105,14 @@ class myThread (threading.Thread):
 
 	while(True):
 		orig_settings = termios.tcgetattr(sys.stdin)
+<<<<<<< HEAD
 		tty.setcbreak(sys.stdin)
 		#tty.setraw(sys.stdin)
 		ch=sys.stdin.read(1)[0]
+=======
+		tty.setraw(sys.stdin)
+		#ch=sys.stdin.read(1)[0]
+>>>>>>> 823dbac77d3a99714b6d980b4715c886ef89d857
 
 		if(ch == 'A'):
 			comm = "up"
