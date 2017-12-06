@@ -15,8 +15,6 @@ from geometry_msgs.msg import Vector3
 
 def rosCommandsFunctions(command, brew):
 
-	#implementar rospack list "nome"
-
 	commandSplit = command.split(" ")
 	if len(commandSplit) == 1:
 		data = {'commandRos':'roscommands', 'function':'roscommands', 'action':'send', 'commands':commandSplit[0]}
@@ -29,7 +27,7 @@ def rosCommandsFunctions(command, brew):
 	else:
 		rospy.logwarn("Wrong command syntax")	
 	
-'''INICIO ROSCOMMANDS'''
+'''ROSCOMMANDS START'''
 def set_robot(brew, commands):
 	global robot 
 	robot = commands
@@ -92,6 +90,6 @@ def roscommands(brew, commands):
 		pub = rospy.Publisher(rob+'/cmd_speed', Twist, queue_size=10)
 		pub.publish(speed)
 
-'''FIM ROSCOMMANDS'''
+'''ROSCOMMANDS END'''
 
 
