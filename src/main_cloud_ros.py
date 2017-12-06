@@ -19,12 +19,6 @@ from rosrun import rosrunFunctions
 import roscommands
 from roscommands import rosCommandsFunctions
 
-<<<<<<< HEAD
-import sensor
-from sensor import rosSensors
-
-=======
->>>>>>> 823dbac77d3a99714b6d980b4715c886ef89d857
 import subprocess
 import threading
 
