@@ -2,7 +2,7 @@
 
 import roslib; roslib.load_manifest('cloud_ros')
 import rospy
-from space_ros.srv import *
+from cloud_ros.srv import *
 from pySpacebrew.spacebrew import Spacebrew
 from std_msgs.msg import String
 import rosgraph.masterapi
@@ -74,7 +74,8 @@ def rosserviceFunctions(comando, brew):
 def rosserviceList(brew, service, args):
 	proc = subprocess.Popen(["rosservice list"], stdout=subprocess.PIPE, shell=True)
 	(dados, err) = proc.communicate()
-	data = {'dados':dados, 'title':'Resultado de rosservice list', 'acao':'receber'}
+	ip = ipgetter.myip()
+	data = {'dados':dados, 'title':"Resultado de rosservice list do master "+ip, 'acao':'receber'}
 	brew.publish("Publisher", data)
 '''FIM ROSSERVICE LIST'''
 
@@ -83,7 +84,8 @@ def rosserviceList(brew, service, args):
 def rosserviceArgs(brew, service, args):
 	proc = subprocess.Popen(["rosservice args "+service], stdout=subprocess.PIPE, shell=True)
 	(dados, err) = proc.communicate()
-	data = {'dados':dados, 'title':'Resultado de rosservice type '+service, 'acao':'receber'}
+	ip = ipgetter.myip()
+	data = {'dados':dados, 'title':"Resultado de rosservice type "+service+ " do master "+ip, 'acao':'receber'}
 	brew.publish("Publisher", data)
 '''FIM ROSSERVICE ARGS'''
 
@@ -92,7 +94,8 @@ def rosserviceArgs(brew, service, args):
 def rosserviceCall(brew, service, args):
 	proc = subprocess.Popen(["rosservice call "+service+" '"+args+"'"], stdout=subprocess.PIPE, shell=True)
 	(dados, err) = proc.communicate()
-	data = {'dados':dados, 'title':'Resultado de rosservice args '+service+' '+args, 'acao':'receber'}
+	ip = ipgetter.myip()
+	data = {'dados':dados, 'title':"Resultado de rosservice args "+service+" "+args+ " do master "+ip, 'acao':'receber'}
 	brew.publish("Publisher", data)
 '''FIM ROSSERVICE CALL'''
 
@@ -101,7 +104,8 @@ def rosserviceCall(brew, service, args):
 def rosserviceNode(brew, service, args):
 	proc = subprocess.Popen(["rosservice node "+service], stdout=subprocess.PIPE, shell=True)
 	(dados, err) = proc.communicate()
-	data = {'dados':dados, 'title':'Resultado de rosservice node '+service, 'acao':'receber'}
+	ip = ipgetter.myip()
+	data = {'dados':dados, 'title':"Resultado de rosservice node "+service+ " do master "+ip, 'acao':'receber'}
 	brew.publish("Publisher", data)
 '''FIM ROSSERVICE NODE'''
 

@@ -70,7 +70,6 @@ def recebido(data):
 		method = getattr(sensor, data['funcao'])
 		result = method(brew, data['dados'])
 	else:
-		rospy.logwarn("no else")
 		rospy.logwarn(data['title']+"\n"+data['dados'])
 
 	#print("--- %s seconds ---" % (time.time() - start_time))
