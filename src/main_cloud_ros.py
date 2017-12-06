@@ -27,45 +27,44 @@ import sys, tty, termios
 import json
 import time
 
-def enviar(req):
+def send(req):
 
 	global start_time
 	start_time = time.time()
 	
 	global brew
 
-	comando = req.comando.split(" ")
+	command = req.command.split(" ")
 
-	if(comando[0] == "rostopic"):
-		rostopicFunctions(req.comando, brew)
-	elif(comando[0] == "rosservice"):
-		rosserviceFunctions(req.comando, brew)
-	elif(comando[0] == "rosrun"):
-		rosrunFunctions(req.comando, brew)
-	elif(comando[0] == "roscommands"):
-		rosCommandsFunctions(req.comando, brew)
+	if(command[0] == "rostopic"):
+		rostopicFunctions(req.command, brew)
+	elif(command[0] == "rosservice"):
+		rosserviceFunctions(req.command, brew)
+	elif(command[0] == "rosrun"):
+		rosrunFunctions(req.command, brew)
+	elif(command[0] == "roscommands"):
+		rosCommandsFunctions(req.command, brew)
 	else:
-		rospy.logwarn("Sintaxe do comando incorreta")
+		rospy.logwarn("Sintaxe do command incorreta")
 
 def recebido(data):
 	global brew
 	global start_time
 
-	if data['acao']=="enviar" and data['comandoRos']=='rostopic':
-		method = getattr(rostopic, data['funcao'])
+	if data['action']=="send" and data['commandRos']=='rostopic':
+		method = getattr(rostopic, data['function'])
 		result = method(brew, data['topic'], data['freq'], data['ip'])
-	elif data['acao']=="enviar" and data['comandoRos']=='rosservice':
-		method = getattr(rosservice, data['funcao'])
+	elif data['action']=="send" and data['commandRos']=='rosservice':
+		method = getattr(rosservice, data['function'])
 		result = method(brew, data['service'], data['args'])
-	elif data['acao']=="enviar" and data['comandoRos']=='rosrun':
-		method = getattr(rosrun, data['funcao'])
+	elif data['action']=="send" and data['commandRos']=='rosrun':
+		method = getattr(rosrun, data['function'])
 		result = method(brew, data['package'], data['executable'], data['parameters'])
-	elif data['acao']=="enviar" and data['comandoRos']=='roscommands':
-		method = getattr(roscommands, data['funcao'])
+	elif data['action']=="send" and data['commandRos']=='roscommands':
+		method = getattr(roscommands, data['function'])
 		result = method(brew, data['commands'])
 	else:
-		rospy.logwarn("no else")
-		rospy.logwarn(data['title']+"\n"+data['dados'])
+		rospy.logwarn(data['title']+"\n"+data['datum'])
 
 	#print("--- %s seconds ---" % (time.time() - start_time))
 
@@ -122,8 +121,8 @@ def cloud_ros():
 		rospy.init_node('cloud_ros_node')
 		rospy.loginfo("cloud_ros node is up and running!!!")
 
-	s = rospy.Service('send_data', Comando, enviar)
-	s2 = rospy.Service('move_alone', Comando, move)
+	s = rospy.Service('send_data', command, send)
+	s2 = rospy.Service('move_alone', command, move)
 
 	rospy.spin()
 

@@ -11,24 +11,22 @@ import os
 import subprocess
 import threading
 
-def rosrunFunctions(comando, brew):
+def rosrunFunctions(command, brew):
 	global stop_
 	stop_ = False
 
-	#implementar rospack list "nome"
-
-	comandoSplit = comando.split(" ")
+	commandSplit = command.split(" ")
 	
-	if len(comandoSplit) == 3:
-		data = {'comandoRos':'rosrun', 'funcao':'rosrun', 'acao':'enviar', 'package':comandoSplit[1], 'executable':comandoSplit[2], 'parameters':''}
+	if len(commandSplit) == 3:
+		data = {'commandRos':'rosrun', 'function':'rosrun', 'action':'enviar', 'package':commandSplit[1], 'executable':commandSplit[2], 'parameters':''}
 		brew.publish("Publisher", data)
-		rospy.logwarn("Comando enviado = "+comando)
-	elif len(comandoSplit) == 4:
-		data = {'comandoRos':'rosrun', 'funcao':'rosrun', 'acao':'enviar', 'package':comandoSplit[1], 'executable':comandoSplit[2], 'parameters':comandoSplit[3]}
+		rospy.logwarn("Sent command = "+command)
+	elif len(commandSplit) == 4:
+		data = {'commandRos':'rosrun', 'function':'rosrun', 'action':'enviar', 'package':commandSplit[1], 'executable':commandSplit[2], 'parameters':commandSplit[3]}
 		brew.publish("Publisher", data)
-		rospy.logwarn("Comando enviado = "+comando)
+		rospy.logwarn("Sent command = "+command)
 	else:
-		rospy.logwarn("Sintaxe do comando incorreta")	
+		rospy.logwarn("Wrong command syntax")	
 	
 '''INICIO ROSRUN'''
 def rosrun(brew, package, executable, parameters):
@@ -44,7 +42,7 @@ def rosrun(brew, package, executable, parameters):
 	else:
 		proc = subprocess.Popen(["rosrun " +package +" "+ executable], stdout=subprocess.PIPE, shell=True)
 
-	data = {'dados':dados, 'title':'Pacote Rodando ', 'acao':'receber'}
+	data = {'dados':dados, 'title':'Package running ', 'action':'receber'}
 	brew.publish("Publisher", data)
 
 	thread1 = myThread(1, "Thread-1", 1)

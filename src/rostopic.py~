@@ -21,76 +21,75 @@ from geometry_msgs.msg import Twist
 #import geometry_msgs.msg
 #import rosgraph_msgs.msg
 
-def rostopicFunctions(comando, brew):
+def rostopicFunctions(command, brew):
 	global stop_
 	stop_ = False
 	global ip_
 
 	ip_ = ipgetter.myip()
 
-	comandoSplit = comando.split(" ")
-	if comandoSplit[1] == "list":
-		if(len(comandoSplit) < 3):
+	commandSplit = command.split(" ")
+	if commandSplit[1] == "list":
+		if(len(commandSplit) < 3):
 			ip = ''
 		else:
-			ip = comandoSplit[2]
+			ip = commandSplit[2]
 
-		data = {'comandoRos':'rostopic', 'funcao':'rostopicList', 'acao':'enviar', 'topic':'', 'freq':'0', 'ip':ip}
+		data = {'commandRos':'rostopic', 'function':'rostopicList', 'action':'send', 'topic':'', 'freq':'0', 'ip':ip}
 		brew.publish("Publisher", data)
-		rospy.logwarn("Comando enviado = "+comando)
+		rospy.logwarn("sent command = "+command)
 
-	elif comandoSplit[1] == "echo":
-		if(len(comandoSplit) < 5):
+	elif commandSplit[1] == "echo":
+		if(len(commandSplit) < 5):
 			ip = ''
 		else:
-			ip = comandoSplit[4]
+			ip = commandSplit[4]
 
-		if len(comandoSplit) < 4:
-			rospy.logwarn("sintaxe = rostopic echo /topic frequency")
+		if len(commandSplit) < 4:
+			rospy.logwarn("syntax = rostopic echo /topic frequency")
 		else:
-			data = {'comandoRos':'rostopic', 'funcao':'rostopicEcho', 'acao':'enviar', 'topic':comandoSplit[2][1:], 'freq':comandoSplit[3], 'ip':ip}
+			data = {'commandRos':'rostopic', 'function':'rostopicEcho', 'action':'send', 'topic':commandSplit[2][1:], 'freq':commandSplit[3], 'ip':ip}
 			brew.publish("Publisher", data)
-			rospy.logwarn("Comando enviado = "+comando)
+			rospy.logwarn("sent command = "+command)
 
-	elif comandoSplit[1] == "info":
-		if(len(comandoSplit) < 4):
+	elif commandSplit[1] == "info":
+		if(len(commandSplit) < 4):
 			ip = ''
 		else:
-			ip = comandoSplit[3]
+			ip = commandSplit[3]
 
-		data = {'comandoRos':'rostopic', 'funcao':'rostopicInfo', 'acao':'enviar', 'topic':comandoSplit[2], 'freq':'0', 'ip':ip}
+		data = {'commandRos':'rostopic', 'function':'rostopicInfo', 'action':'send', 'topic':commandSplit[2], 'freq':'0', 'ip':ip}
 		brew.publish("Publisher", data)
-		rospy.logwarn("Comando enviado = "+comando)
+		rospy.logwarn("sent command = "+command)
 
-	elif comandoSplit[1] == "stop":
+	elif commandSplit[1] == "stop":
 		stop_ = True
-		rospy.logwarn("mudou pra true")
 
 	else:
-		rospy.logwarn("Sintaxe do comando incorreta")	
+		rospy.logwarn("Wrong command syntax")	
 	
-'''INICIO ROSTOPIC LIST'''
+'''ROSTOPIC LIST START'''
 def rostopicList(brew, topic, freq, ip):
 
 	global ip_
-	dados = ""
+	datum = ""
 
 	if(ip == '' or ip == ip_):
 		master = rosgraph.masterapi.Master('/rostopic')
 		resp = master.getPublishedTopics('/')
 
 		for i in range(0, len(resp)):
-			dados += "\n"+resp[i][0]
+			datum += "\n"+resp[i][0]
 
-		data = {'dados':dados, 'title':"Resultados de rostopic list do master "+ip_, 'acao':'receber'}
+		data = {'datum':datum, 'title':"Rostopic list results from master "+ip_, 'action':'receive'}
 	else:	
-		data = {'dados':dados, 'title':"IP = " +ip+ " e nao corresponde ao solicitado", 'acao':'receber'}
+		data = {'datum':datum, 'title':"IP = " +ip+ " does not correspond to the requested", 'action':'receive'}
 
 	brew.publish("Publisher", data)
-'''FIM ROSTOPIC LIST'''
+'''ROSTOPIC LIST END'''
 
 
-'''INICIO ROSTOPIC ECHO'''
+'''ROSTOPIC ECHO START'''
 def ros2xml(msg, name, depth=0):
 	xml = "";
 	tabs = "\t"*depth
@@ -116,16 +115,15 @@ def callback(resp):
 	global freq_
 	global ip_
 
-	#dados = resp.data
+	#datum = resp.data
 	while(stop_ == False):
 		xml = ros2xml(resp, "")
-		data = {'dados':xml, 'title':"Resultados de rostopic echo do master "+ip_, 'acao':'receber'}
+		data = {'datum':xml, 'title':"Rostopic echo results from master "+ip_, 'action':'receive'}
 
 		brew_.publish("Publisher", data)
 		time.sleep(float(freq_))
 		#rospy.logwarn("aqui = "+str(stop_))
 
-<<<<<<< HEAD
 	return
 
 
@@ -139,57 +137,39 @@ def rostopicEcho(brew, topic, freq, ip):
 
 	freq_ = freq
 	stop_ = False
-	dados = ""
+	datum = ""
 
 	if(ip == '' or ip == ip_):
 		proc = subprocess.Popen(["rostopic type "+topic], stdout=subprocess.PIPE, shell=True)
-		(dados, err) = proc.communicate()
+		(datum, err) = proc.communicate()
 
-		dado = dados.split("/")
-		dado[0] += ".msg"
+		data = datum.split("/")
+		data[0] += ".msg"
 
-		mod = __import__(dado[0], fromlist=[dado[1]])
+		mod = __import__(data[0], fromlist=[data[1]])
 
-		klass = getattr(mod, dado[1].strip())
+		klass = getattr(mod, data[1].strip())
 
 		rospy.Subscriber(topic, klass, callback)
 	else:
-		data = {'dados':dados, 'title':"IP = " +ip+ " e nao corresponde ao solicitado", 'acao':'receber'}
+		data = {'datum':datum, 'title':"IP = " +ip+ " does not correspond to the requested", 'action':'receive'}
 		brew.publish("Publisher", data)
-=======
-
-def rostopicEcho(brew, topic):
-	global brew_
-	brew_ = brew
-
-	proc = subprocess.Popen(["rostopic type "+topic], stdout=subprocess.PIPE, shell=True)
-	(dados, err) = proc.communicate()
-
-	dado = dados.split("/")
-	dado[0] += ".msg"
-
-	mod = __import__(dado[0], fromlist=[dado[1]])
-
-	klass = getattr(mod, dado[1].strip())
-
-	rospy.Subscriber(topic, klass, callback)
->>>>>>> 823dbac77d3a99714b6d980b4715c886ef89d857
 '''FIM ROSTOPIC ECHO'''
 
 
-'''INICIO ROSTOPIC INFO'''
+'''ROSTOPIC INFO START'''
 def rostopicInfo(brew, topic, freq, ip):
 	global ip_
-	dados = ""
+	datum = ""
 
 	if(ip == '' or ip == ip_):
 		proc = subprocess.Popen(["rostopic info "+topic], stdout=subprocess.PIPE, shell=True)
-		(dados, err) = proc.communicate()
+		(datum, err) = proc.communicate()
 		ip = ipgetter.myip()
-		data = {'dados':dados, 'title':"Resultado de rostopic info "+topic+ " do master "+ip_, 'acao':'receber'}
+		data = {'datum':datum, 'title':"Rostopic info results "+topic+ " from master "+ip_, 'action':'receive'}
 	else:
-		data = {'dados':dados, 'title':"IP = " +ip_+ " e nao corresponde ao solicitado", 'acao':'receber'}
+		data = {'datum':datum, 'title':"IP = " +ip_+ " does not correspond to the requested", 'action':'receive'}
 
 	brew.publish("Publisher", data)
 
-'''FIM ROSTOPIC INFO'''
+'''ROSTOPIC INFO END'''
