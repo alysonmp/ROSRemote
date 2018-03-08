@@ -5,85 +5,163 @@ import rospy
 from cloud_ros.srv import *
 from pySpacebrew.spacebrew import Spacebrew
 from std_msgs.msg import String
+from geometry_msgs.msg import Twist
 import rosgraph.masterapi
 import time
 import os
 import subprocess
 
-def rostopicFunctions(comando, brew):
+import importlib
+import sys
+
+#from rosgraph_msgs.msg import Log
+from geometry_msgs.msg import Twist
+
+#import std_msgs.msg
+#import geometry_msgs.msg
+#import rosgraph_msgs.msg
+
+def rostopicFunctions(command, brew):
+
 	global stop_
 	stop_ = False
+	global ip_
 
-	comandoSplit = comando.split(" ")
-	if comandoSplit[1] == "list":
-		data = {'comandoRos':'rostopic', 'funcao':'rostopicList', 'acao':'enviar', 'topic':''}
-		brew.publish("Publisher", data)
-		rospy.logwarn("Comando enviado = "+comando)
-
-	elif comandoSplit[1] == "echo":
-		if len(comandoSplit) != 4:
-			rospy.logwarn("sintaxe = rostopic echo /topic frequency")
+	commandSplit = command.split(" ")
+	if commandSplit[1] == "list":
+		if(len(commandSplit) < 3):
+			ip = ''
 		else:
-			data = {'comandoRos':'rostopic', 'funcao':'rostopicEcho', 'acao':'enviar', 'topic':comandoSplit[2][1:]}
-			brew.publish("Publisher", data)
-			rospy.logwarn("Comando enviado = "+comando)
+			ip = commandSplit[2]
 
-	elif comandoSplit[1] == "info":
-		data = {'comandoRos':'rostopic', 'funcao':'rostopicInfo', 'acao':'enviar', 'topic':comandoSplit[2]}
+		data = {'commandRos':'rostopic', 'function':'rostopicList', 'action':'send', 'topic':'', 'freq':'0', 'ip':ip}
+
 		brew.publish("Publisher", data)
-		rospy.logwarn("Comando enviado = "+comando)
+		rospy.logwarn("Sent command = "+command)
 
-	elif comandoSplit[1] == "stop":
+	elif commandSplit[1] == "echo":
+		if(len(commandSplit) < 5):
+			ip = ''
+		else:
+			ip = commandSplit[4]
+
+		if len(commandSplit) < 4:
+			rospy.logwarn("syntax = rostopic echo /topic frequency")
+		else:
+			data = {'commandRos':'rostopic', 'function':'rostopicEcho', 'action':'send', 'topic':commandSplit[2][1:], 'freq':commandSplit[3], 'ip':ip}
+			brew.publish("Publisher", data)
+			rospy.logwarn("Sent command = "+command)
+
+	elif commandSplit[1] == "info":
+		if(len(commandSplit) < 4):
+			ip = ''
+		else:
+			ip = commandSplit[3]
+
+		data = {'commandRos':'rostopic', 'function':'rostopicInfo', 'action':'send', 'topic':commandSplit[2], 'freq':'0', 'ip':ip}
+		brew.publish("Publisher", data)
+		rospy.logwarn("Sent command = "+command)
+
+	elif commandSplit[1] == "stop":
 		stop_ = True
-
 	else:
-		rospy.logwarn("Sintaxe do comando incorreta")	
+		rospy.logwarn("Incorrect command syntax")	
 	
 '''INICIO ROSTOPIC LIST'''
-def rostopicList(brew, topic):
+def rostopicList(brew, topic, freq, ip):
+
+	datum = ""
+
 	master = rosgraph.masterapi.Master('/rostopic')
 	resp = master.getPublishedTopics('/')
 
-	dados = ""
 	for i in range(0, len(resp)):
-		dados += "\n"+resp[i][0]
+		datum += "\n"+resp[i][0]
 
-	data= {'dados':dados, 'title':"Resultados de rostopic list", 'acao':'receber'}
+	data = {'datum':datum, 'title':"Rostopic list results from master "+brew.name, 'action':'receive'}
+
 	brew.publish("Publisher", data)
 '''FIM ROSTOPIC LIST'''
 
 
 '''INICIO ROSTOPIC ECHO'''
+def ros2xml(msg, name, depth=0):
+	xml = "";
+	tabs = "\t"*depth
+
+	if hasattr(msg, "_type"):
+	    type = msg._type
+	    xml = xml + tabs + "<" + name + " type=\"" + type + "\">\n"
+
+	    try:
+		for slot in msg.__slots__:
+		    xml = xml + ros2xml(getattr(msg, slot), slot, depth=depth+1)
+	    except:
+		xml = xml + tabs + str(msg)
+	    xml = xml + tabs + "</" + name + ">\n"
+	else:
+	    xml = xml + tabs + "<" + name + ">" + str(msg) + "</" + name + ">\n"
+	return xml
+
 def callback(resp):
 
 	global brew_
 	global stop_
+	global freq_
 
-	stop_ = False
-
-	dados = resp.data
-	rospy.logwarn(stop_)
+	#dados = resp.data
 	while(stop_ == False):
-		data= {'dados':dados, 'title':"Resultados de rostopic echo ", 'acao':'receber'}
+		xml = ros2xml(resp, "")
+		data = {'datum':xml, 'title':"Rostopic echo results from master "+brew_.name, 'action':'receive'}
 		brew_.publish("Publisher", data)
-		time.sleep(1)
-		rospy.logwarn("aqui = "+str(stop_))
+		time.sleep(float(freq_))
 
-	rospy.logwarn(stop_)
+	return
 
-def rostopicEcho(brew, topic):
+
+def rostopicEcho(brew, topic, freq, ip):
 	global brew_
 	brew_ = brew
 
-	rospy.Subscriber(topic, String, callback)
+	global freq_
+	global stop_
+	global ip_
+
+	freq_ = freq
+	stop_ = False
+	dados = ""
+
+	if(ip == '' or ip == ip_):
+		proc = subprocess.Popen(["rostopic type "+topic], stdout=subprocess.PIPE, shell=True)
+		(datum, err) = proc.communicate()
+
+		dado = datum.split("/")
+		dado[0] += ".msg"
+
+		mod = __import__(dado[0], fromlist=[dado[1]])
+
+		klass = getattr(mod, dado[1].strip())
+
+		rospy.Subscriber(topic, klass, callback)
+	else:
+		data = {'datum':datum, 'title':"IP = " +ip+ " does not correspond to the requested", 'action':'receive'}
+		brew.publish("Publisher", data)
 '''FIM ROSTOPIC ECHO'''
 
 
 '''INICIO ROSTOPIC INFO'''
-def rostopicInfo(brew, topic):
-	proc = subprocess.Popen(["rostopic info "+topic], stdout=subprocess.PIPE, shell=True)
-	(dados, err) = proc.communicate()
-	data = {'dados':dados, 'title':'Resultado de rostopic info '+topic, 'acao':'receber'}
+def rostopicInfo(brew, topic, freq, ip):
+	global ip_
+	dados = ""
+
+	if(ip == '' or ip == ip_):
+		proc = subprocess.Popen(["rostopic info "+topic], stdout=subprocess.PIPE, shell=True)
+		(datum, err) = proc.communicate()
+
+		data = {'datum':datum, 'title':"Rostopic info "+topic+ " results from master "+brew.name, 'action':'receive'}
+	else:
+		data = {'datum':datum, 'title':"IP = " +ip+ " does not correspond to the requested", 'action':'receive'}
+
 	brew.publish("Publisher", data)
 
 '''FIM ROSTOPIC INFO'''

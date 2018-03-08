@@ -51,6 +51,8 @@ def received(data):
 	global brew
 	global start_time
 
+	rospy.logwarn(data['commandRos']+" "+data['function'])
+
 	if data['action']=="send" and data['commandRos']=='rostopic':
 		method = getattr(rostopic, data['function'])
 		result = method(brew, data['topic'], data['freq'], data['ip'])
