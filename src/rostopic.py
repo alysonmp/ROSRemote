@@ -81,7 +81,7 @@ def rostopicList(brew, topic, freq, ip):
 	data = {'datum':datum, 'title':"Rostopic list results from master "+brew.name, 'action':'receive'}
 
 	brew.publish("Publisher", data)
-'''FIM ROSTOPIC LIST'''
+'''ROSTOPIC LIST END'''
 
 
 '''INICIO ROSTOPIC ECHO'''
@@ -118,7 +118,6 @@ def callback(resp):
 
 	return
 
-
 def rostopicEcho(brew, topic, freq, ip):
 	global brew_
 	brew_ = brew
@@ -129,7 +128,8 @@ def rostopicEcho(brew, topic, freq, ip):
 
 	freq_ = freq
 	stop_ = False
-	dados = ""
+
+	datum = ""
 
 	if(ip == '' or ip == ip_):
 		proc = subprocess.Popen(["rostopic type "+topic], stdout=subprocess.PIPE, shell=True)
@@ -149,10 +149,9 @@ def rostopicEcho(brew, topic, freq, ip):
 '''FIM ROSTOPIC ECHO'''
 
 
-'''INICIO ROSTOPIC INFO'''
+'''ROSTOPIC INFO START'''
 def rostopicInfo(brew, topic, freq, ip):
-	global ip_
-	dados = ""
+	datum = ""
 
 	if(ip == '' or ip == ip_):
 		proc = subprocess.Popen(["rostopic info "+topic], stdout=subprocess.PIPE, shell=True)
@@ -164,4 +163,4 @@ def rostopicInfo(brew, topic, freq, ip):
 
 	brew.publish("Publisher", data)
 
-'''FIM ROSTOPIC INFO'''
+'''ROSTOPIC INFO END'''

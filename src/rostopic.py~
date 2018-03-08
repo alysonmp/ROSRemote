@@ -11,8 +11,13 @@ import time
 import os
 import subprocess
 
+<<<<<<< HEAD
 import importlib
 import sys
+=======
+import ipgetter
+import importlib
+>>>>>>> 76550579ceb2a72361e7c3e8cea62b2a3fd5cd65
 
 #from rosgraph_msgs.msg import Log
 from geometry_msgs.msg import Twist
@@ -22,6 +27,7 @@ from geometry_msgs.msg import Twist
 #import rosgraph_msgs.msg
 
 def rostopicFunctions(command, brew):
+<<<<<<< HEAD
 
 	global stop_
 	stop_ = False
@@ -51,6 +57,37 @@ def rostopicFunctions(command, brew):
 			data = {'commandRos':'rostopic', 'function':'rostopicEcho', 'action':'send', 'topic':commandSplit[2][1:], 'freq':commandSplit[3], 'ip':ip}
 			brew.publish("Publisher", data)
 			rospy.logwarn("Sent command = "+command)
+=======
+	global stop_
+	stop_ = False
+	global ip_
+
+	ip_ = ipgetter.myip()
+
+	commandSplit = command.split(" ")
+	if commandSplit[1] == "list":
+		if(len(commandSplit) < 3):
+			ip = ''
+		else:
+			ip = commandSplit[2]
+
+		data = {'commandRos':'rostopic', 'function':'rostopicList', 'action':'send', 'topic':'', 'freq':'0', 'ip':ip}
+		brew.publish("Publisher", data)
+		rospy.logwarn("sent command = "+command)
+
+	elif commandSplit[1] == "echo":
+		if(len(commandSplit) < 5):
+			ip = ''
+		else:
+			ip = commandSplit[4]
+
+		if len(commandSplit) < 4:
+			rospy.logwarn("syntax = rostopic echo /topic frequency")
+		else:
+			data = {'commandRos':'rostopic', 'function':'rostopicEcho', 'action':'send', 'topic':commandSplit[2][1:], 'freq':commandSplit[3], 'ip':ip}
+			brew.publish("Publisher", data)
+			rospy.logwarn("sent command = "+command)
+>>>>>>> 76550579ceb2a72361e7c3e8cea62b2a3fd5cd65
 
 	elif commandSplit[1] == "info":
 		if(len(commandSplit) < 4):
@@ -81,7 +118,7 @@ def rostopicList(brew, topic, freq, ip):
 	data = {'datum':datum, 'title':"Rostopic list results from master "+brew.name, 'action':'receive'}
 
 	brew.publish("Publisher", data)
-'''FIM ROSTOPIC LIST'''
+'''ROSTOPIC LIST END'''
 
 
 '''INICIO ROSTOPIC ECHO'''
@@ -112,12 +149,11 @@ def callback(resp):
 	#dados = resp.data
 	while(stop_ == False):
 		xml = ros2xml(resp, "")
-		data = {'datum':xml, 'title':"Rostopic echo results from master "+brew.name, 'action':'receive'}
+		data = {'datum':xml, 'title':"Rostopic echo results from master "+brew_.name, 'action':'receive'}
 		brew_.publish("Publisher", data)
 		time.sleep(float(freq_))
 
 	return
-
 
 def rostopicEcho(brew, topic, freq, ip):
 	global brew_
@@ -129,7 +165,8 @@ def rostopicEcho(brew, topic, freq, ip):
 
 	freq_ = freq
 	stop_ = False
-	dados = ""
+
+	datum = ""
 
 	if(ip == '' or ip == ip_):
 		proc = subprocess.Popen(["rostopic type "+topic], stdout=subprocess.PIPE, shell=True)
@@ -149,10 +186,9 @@ def rostopicEcho(brew, topic, freq, ip):
 '''FIM ROSTOPIC ECHO'''
 
 
-'''INICIO ROSTOPIC INFO'''
+'''ROSTOPIC INFO START'''
 def rostopicInfo(brew, topic, freq, ip):
-	global ip_
-	dados = ""
+	datum = ""
 
 	if(ip == '' or ip == ip_):
 		proc = subprocess.Popen(["rostopic info "+topic], stdout=subprocess.PIPE, shell=True)
@@ -164,4 +200,4 @@ def rostopicInfo(brew, topic, freq, ip):
 
 	brew.publish("Publisher", data)
 
-'''FIM ROSTOPIC INFO'''
+'''ROSTOPIC INFO END'''

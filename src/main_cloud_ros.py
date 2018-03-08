@@ -19,9 +19,6 @@ from rosrun import rosrunFunctions
 import roscommands
 from roscommands import rosCommandsFunctions
 
-import sensor
-from sensor import rosSensors
-
 import subprocess
 import threading
 
@@ -63,9 +60,6 @@ def received(data):
 	elif data['action']=="send" and data['commandRos']=='roscommands':
 		method = getattr(roscommands, data['function'])
 		result = method(brew, data['commands'])
-	elif data['action'] == "send" and data['commandRos']=="sensor":
-		method = getattr(sensor, data['function'])
-		result = method(brew, data['datum'])
 	else:
 		rospy.logwarn(data['title']+"\n"+data['datum'])
 
@@ -102,6 +96,7 @@ class myThread (threading.Thread):
 
 def cloud_ros():
 	name = "rosPy Example"
+
 	server = "localhost"
 	#server = "sandbox.spacebrew.cc"
 	

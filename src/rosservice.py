@@ -47,6 +47,7 @@ def rosserviceFunctions(command, brew):
 		else:
 			data = {'commandRos':'rosservice', 'function':'rosserviceNode', 'action':'send', 'service':commandSplit[2], 'args':''}
 			brew.publish("Publisher", data)
+
 			rospy.logwarn("Sent command = "+command)
 
 	elif comandoSplit[1] == "type":
@@ -64,53 +65,57 @@ def rosserviceFunctions(command, brew):
 			brew.publish("Publisher", data)
 			rospy.logwarn("Sent command = "+command)
 
-	elif comandoSplit[1] == "stop":
+	elif commandSplit[1] == "stop":
 		stop_ = True
 
 	else:
 		rospy.logwarn("Incorrect command syntax")	
 	
-'''INICIO ROSSERVICE LIST'''
+'''ROSSERVICE LIST START'''
 def rosserviceList(brew, service, args):
 	proc = subprocess.Popen(["rosservice list"], stdout=subprocess.PIPE, shell=True)
-	(dados, err) = proc.communicate()
+
+	(datum, err) = proc.communicate()
 
 	data = {'datum':datum, 'title':"Rosservice list results from master "+brew.name, 'action':'receive'}
+
 	brew.publish("Publisher", data)
-'''FIM ROSSERVICE LIST'''
+'''ROSSERVICE LIST END'''
 
 
-'''INICIO ROSSERVICE ARGS'''
+'''ROSSERVICE ARGS START'''
 def rosserviceArgs(brew, service, args):
 	proc = subprocess.Popen(["rosservice args "+service], stdout=subprocess.PIPE, shell=True)
-	(dados, err) = proc.communicate()
+
+	(datum, err) = proc.communicate()
 
 	data = {'datum':datum, 'title':"Rosservice args "+service+ " results from master "+brew.name, 'action':'receive'}
 	brew.publish("Publisher", data)
-'''FIM ROSSERVICE ARGS'''
+'''ROSSERVICE ARGS END'''
 
 
-'''INICIO ROSSERVICE CALL'''
+'''ROSSERVICE CALL START'''
 def rosserviceCall(brew, service, args):
 	proc = subprocess.Popen(["rosservice call "+service+" '"+args+"'"], stdout=subprocess.PIPE, shell=True)
 	(dados, err) = proc.communicate()
 
 	data = {'datum':datum, 'title':"Rosservice call "+service+" "+args+ " results from master "+brew.name, 'action':'receive'}
 	brew.publish("Publisher", data)
-'''FIM ROSSERVICE CALL'''
+'''ROSSERVICE CALL END'''
 
 
-'''INICIO ROSSERVICE NODE'''
+'''ROSSERVICE NODE START'''
 def rosserviceNode(brew, service, args):
 	proc = subprocess.Popen(["rosservice node "+service], stdout=subprocess.PIPE, shell=True)
-	(dados, err) = proc.communicate()
+	(datum, err) = proc.communicate()
 
 	data = {'datum':datum, 'title':"Rosservice node "+service+ " results from master "+brew.name, 'action':'receive'}
+
 	brew.publish("Publisher", data)
-'''FIM ROSSERVICE NODE'''
+'''ROSSERVICE NODE END'''
 
 
-'''INICIO ROSSERVICE TYPE'''
+'''ROSSERVICE TYPE START'''
 def rosserviceType(brew, service, args):
 	if args=="":
 		proc = subprocess.Popen(["rosservice type "+service], stdout=subprocess.PIPE, shell=True)
@@ -121,7 +126,7 @@ def rosserviceType(brew, service, args):
 
 	data = {'datum':datum, 'title':"Rosservice type "+service+ " results from master "+brew.name, 'action':'receive'}
 	brew.publish("Publisher", data)
-'''FIM ROSSERVICE TYPE'''
+'''ROSSERVICE TYPE END'''
 
 
 

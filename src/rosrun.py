@@ -15,8 +15,6 @@ def rosrunFunctions(command, brew):
 	global stop_
 	stop_ = False
 
-	#implementar rospack list "nome"
-
 	commandSplit = command.split(" ")
 	
 	if len(commandSplit) == 3:
@@ -31,6 +29,7 @@ def rosrunFunctions(command, brew):
 		rospy.logwarn("Incorrect command syntax")	
 	
 '''INICIO ROSRUN'''
+
 def rosrun(brew, package, executable, parameters):
 
 	aux = parameters.split("@")
@@ -45,13 +44,13 @@ def rosrun(brew, package, executable, parameters):
 		proc = subprocess.Popen(["rosrun " +package +" "+ executable], stdout=subprocess.PIPE, shell=True)
 
 	data = {'datum':datum, 'title':'Package running ', 'action':'receive'}
+
 	brew.publish("Publisher", data)
 
 	thread1 = myThread(1, "Thread-1", 1)
 	thread1.start()
 
 '''FIM ROSRUN'''
-
 
 class myThread (threading.Thread):
     def __init__(self, threadID, name, counter):
