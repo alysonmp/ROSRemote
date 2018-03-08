@@ -67,7 +67,7 @@ def rostopicFunctions(command, brew):
 	else:
 		rospy.logwarn("Incorrect command syntax")	
 	
-'''INICIO ROSTOPIC LIST'''
+'''ROSTOPIC LIST START'''
 def rostopicList(brew, topic, freq, ip):
 
 	datum = ""
@@ -84,7 +84,7 @@ def rostopicList(brew, topic, freq, ip):
 '''ROSTOPIC LIST END'''
 
 
-'''INICIO ROSTOPIC ECHO'''
+'''ROSTOPIC ECHO START'''
 def ros2xml(msg, name, depth=0):
 	xml = "";
 	tabs = "\t"*depth

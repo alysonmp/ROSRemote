@@ -28,7 +28,7 @@ def rosrunFunctions(command, brew):
 	else:
 		rospy.logwarn("Incorrect command syntax")	
 	
-'''INICIO ROSRUN'''
+'''ROSRUN START'''
 
 def rosrun(brew, package, executable, parameters):
 
@@ -50,7 +50,7 @@ def rosrun(brew, package, executable, parameters):
 	thread1 = myThread(1, "Thread-1", 1)
 	thread1.start()
 
-'''FIM ROSRUN'''
+'''ROSRUN END'''
 
 class myThread (threading.Thread):
     def __init__(self, threadID, name, counter):

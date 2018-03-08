@@ -27,7 +27,7 @@ def rosCommandsFunctions(command, brew):
 	else:
 		rospy.logwarn("Incorrect command syntax")	
 	
-'''INICIO ROSCOMMANDS'''
+'''ROSCOMMANDS START'''
 def set_robot(brew, commands):
 	global robot 
 	robot = commands
@@ -75,6 +75,6 @@ def roscommands(brew, commands):
 		pub = rospy.Publisher(rob+'/cmd_vel', Twist, queue_size=10)
 		pub.publish(vel)
 
-'''FIM ROSCOMMANDS'''
+'''ROSCOMMANDS END'''
 
 
