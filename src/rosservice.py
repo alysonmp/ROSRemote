@@ -37,6 +37,10 @@ def rosserviceFunctions(command, brew):
 			rospy.logwarn("Sent command = "+command)
 		else:
 			argsSplit = command.split('"')
+			
+			rospy.loginfo(commandSplit[2])
+			rospy.loginfo(argsSplit[1])
+
 			data = {'commandRos':'rosservice', 'function':'rosserviceCall', 'action':'send', 'service':commandSplit[2], 'args':argsSplit[1]}
 			brew.publish("Publisher", data)
 			rospy.logwarn("Sent command = "+command)
